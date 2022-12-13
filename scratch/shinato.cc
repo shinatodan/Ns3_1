@@ -64,7 +64,7 @@ WifiPhyStats::GetPhyTxBytes ()
 }
 
 
-class VanetRoutingExperiment
+class VanetRoutingExperiment//シナリオメイン
 {
 public:
     VanetRoutingExperiment(); //コンストラクタ　パラメータの初期化
