@@ -10,6 +10,7 @@ Table of Contents:
 3) Running ns-3
 4) Getting access to the ns-3 documentation
 5) Working with the development version of ns-3
+6) Scenario by shinato
 
 Note:  Much more substantial information about ns-3 can be found at
 http://www.nsnam.org
@@ -115,3 +116,12 @@ familiar with it.
 If you have successfully installed mercurial, you can get
 a copy of the development version with the following command:
 "hg clone http://code.nsnam.org/ns-3-dev"
+
+6) Scenario by shinato
+
+As part of his master's research, he created a simulation environment 
+for VANET.There is an incomplete scenario file in sclach/shinato.cc, 
+which will be improved in the near future.
+
+
+
