@@ -119,7 +119,7 @@ a copy of the development version with the following command:
 
 6) Scenario by shinato
 
-As part of his master's research, he created a simulation environment 
+As part of my master's research, I created a simulation environment 
 for VANET.There is an incomplete scenario file in sclach/shinato.cc, 
 which will be improved in the near future.
 
