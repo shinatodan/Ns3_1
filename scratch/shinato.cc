@@ -152,7 +152,7 @@ m_delay (0),
 m_overHead (0),
 m_packetLoss (0),
 m_numHops(0),
-traceFile("/home/hry-user/ノード/test.tcl")//モビリティトレースファイル
+traceFile("/home/hry-user/ns-allinone-3.26/ns-3.26/node/test.tcl")//モビリティトレースファイル
 {
     //送受信ノード選択
     sourceNode[0] = 0;
