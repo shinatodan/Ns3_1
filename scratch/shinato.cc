@@ -64,7 +64,7 @@ WifiPhyStats::GetPhyTxBytes ()
 }
 
 
-class VanetRoutingExperiment//シナリオメイン
+class VanetRoutingExperiment
 {
 public:
     VanetRoutingExperiment(); //コンストラクタ　パラメータの初期化
@@ -218,9 +218,6 @@ VanetRoutingExperiment::ConfigureNodes ()//ノードを作成する
 void
 VanetRoutingExperiment::ConfigureDevices ()//チャネルを構成する
 {
-    //test
-    WifiHelper wifi;
-    wifi.SetStandard(WIFI_PHY_STANDARD_80211b);
 
     // Setup propagation models
     YansWifiChannelHelper wifiChannel;
