@@ -27,6 +27,7 @@
 #include "ns3/netanim-module.h"
 #include <string>
 
+//原型シナリオファイル
 
 
 using namespace ns3;
@@ -218,22 +219,15 @@ private:
   void ConfigureRoutingMessages (NodeContainer & c,
                              Ipv4InterfaceContainer & ic);
 
-  void ConfigureRoutingPacketReceive (Ipv4Address addr, Ptr<Node> node);
+  Ptr<Socket> ConfigureRoutingPacketReceive (Ipv4Address addr, Ptr<Node> node);
 
-  //shinato
   void ReceiveRoutingPacket (Ptr<Socket> socket);
-  void GenerateTraffic (Ptr<Socket> socket, Time pktInterval);
 
   double m_totalSimTime;
   std::string m_protocolName;
   uint32_t m_port;
   uint32_t m_sourceNode;
-  uint32_t m_sinkNode;
-
-  //shinato
-  uint32_t numPacket;
-  uint32_t totalSent;
-  uint32_t totalReceive;
+  uint32_t m_sinkNode;              
 
   RoutingStats routingStats;
 
@@ -252,8 +246,7 @@ RoutingHelper::GetTypeId (void)
 
 RoutingHelper::RoutingHelper ()
   : m_totalSimTime (360),//シュミレーション時間
-    m_port (9),
-    numPacket(1000)
+    m_port (9)
 {
     //送受信ノード選択
     m_sourceNode=0;
@@ -275,8 +268,8 @@ RoutingHelper::Install (NodeContainer & c,
 {
   m_totalSimTime = totalTime;
   m_protocolName=protocolName;
-  ConfigureRoutingProtocol (c);//ノードにルーティングを設定
-  ConfigureIPAddress (d,ic);//ノードにIPアドレス割当
+  ConfigureRoutingProtocol (c);
+  ConfigureIPAddress (d,ic);
   ConfigureRoutingMessages (c, ic);
 }
 
@@ -340,7 +333,7 @@ RoutingHelper::ConfigureIPAddress (NetDeviceContainer& d, Ipv4InterfaceContainer
 {
 	Ipv4AddressHelper ipv4;
 	ipv4.SetBase ("192.168.1.0", "255.255.255.0");
-	ic = ipv4.Assign (d);//IPアドレス割当
+	ic = ipv4.Assign (d);
 	}
 
 
@@ -349,90 +342,38 @@ RoutingHelper::ConfigureRoutingMessages (NodeContainer & c,
                                      Ipv4InterfaceContainer & ic)
 {
   uint32_t src,dst;
-  totalReceive = 0;
-  totalSent = 0;
-
-  /*//shinato
-  uint32_t nodeid;
 
   int seed=time(NULL);
   srand(seed);
+  
   // Setup routing transmissions
-  OnOffHelper onoff ("ns3::UdpSocketFactory",Address ());//onoffapplication宣言
-  onoff.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+  OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
+  onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 
-    src=m_sourceNode;//送信ノード
-    dst=m_sinkNode;//受信ノード
-
-  for(nodeid=1;nodeid<c.GetN();nodeid++){
-    ConfigureRoutingPacketReceive (ic.GetAddress (nodeid), c.Get (nodeid));
-  }
-
-
-    AddressValue remoteAddress (InetSocketAddress (ic.GetAddress (dst), m_port));//宛先アドレス取得
-    onoff.SetAttribute ("Remote", remoteAddress);//onoffapplicationに宛先情報を渡す
-
-
-    PacketSinkHelper packetsink ("ns3::UdpSocketFactory",InetSocketAddress (Ipv4Address::GetAny (), m_port));//packetsink宣言
-
-    ApplicationContainer temp1 = onoff.Install (c.Get (src));//送信ノードにonoffアプリケーションを実装
-    double startTime =double(rand()%11)/10.0+1.0;
-    temp1.Start (Seconds (startTime));
-    temp1.Stop (Seconds (m_totalSimTime));
-
-    ApplicationContainer temp2 = packetsink.Install (c.Get(dst));
-    temp2.Start (Seconds (startTime));
-    temp2.Stop (Seconds (m_totalSimTime));*/
-    src=m_sourceNode;//送信ノード
-    dst=m_sinkNode;//受信ノード
-
-    TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-
-    Ptr<Socket> destination = Socket::CreateSocket (c.Get(dst), tid);
-	  InetSocketAddress local = InetSocketAddress (ic.GetAddress(dst), m_port);
-  	destination->Bind (local);
-	  destination->SetRecvCallback (MakeCallback (&RoutingHelper::ReceiveRoutingPacket, this));
-
-    Ptr<Socket> source = Socket::CreateSocket (c.Get(src), tid);
-    InetSocketAddress srcSocketAddr = InetSocketAddress (ic.GetAddress(src), m_port);
-    if (InetSocketAddress::IsMatchingType (ic.GetAddress(dst)) || PacketSocketAddress::IsMatchingType (ic.GetAddress(dst))){
-      source->Bind (srcSocketAddr); 
-    }
-    source->SetAllowBroadcast (true);
-    source->Connect (local);
-
-    Time interPacketInterval = Seconds (1);
-    // Give Proactive algorithms some time to converge -- 20 seconds perhaps
-    Simulator::Schedule (Seconds (20.0), &RoutingHelper::GenerateTraffic, this, source, interPacketInterval);
-
+  src=m_sourceNode;
+  dst=m_sinkNode;
+  Ptr<Socket> sink = ConfigureRoutingPacketReceive (ic.GetAddress (dst), c.Get (dst));
+  AddressValue remoteAddress (InetSocketAddress (ic.GetAddress (dst), m_port));
+  onoff1.SetAttribute ("Remote", remoteAddress);
+  ApplicationContainer temp = onoff1.Install (c.Get (src));
+  double startTime =double(rand()%11)/10.0+1.0;
+  temp.Start (Seconds (startTime));
+  temp.Stop (Seconds (m_totalSimTime));
+  
 }
 
-void
-RoutingHelper::GenerateTraffic (Ptr<Socket> socket, Time pktInterval)
-{
-  NS_LOG_FUNCTION(this);
 
-  if (numPacket > 0) {
-		socket->Send (Create<Packet> (1024));
-		Simulator::Schedule (pktInterval, &RoutingHelper::GenerateTraffic, this, socket, pktInterval);
-		totalSent ++;
-		numPacket --;
-    	} else {
-		socket->Close ();
-	}
-
-}
-
-void
+Ptr<Socket>
 RoutingHelper::ConfigureRoutingPacketReceive (Ipv4Address addr, Ptr<Node> node)
 {
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-
   Ptr<Socket> sink = Socket::CreateSocket (node, tid);
   InetSocketAddress local = InetSocketAddress (addr, m_port);
   sink->Bind (local);
   sink->SetRecvCallback (MakeCallback (&RoutingHelper::ReceiveRoutingPacket, this));
+
+  return sink;
 }
 
 void
@@ -441,7 +382,6 @@ RoutingHelper::ReceiveRoutingPacket (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while ((packet = socket->Recv ()))
     {
-      std::cout << "x" << std::endl;
       // application data, for goodput
       uint32_t RxRoutingBytes = packet->GetSize ();
       GetRoutingStats().IncRxBytes (RxRoutingBytes);
@@ -487,9 +427,6 @@ public:
 
   virtual void ProcessOutputs ();//出力を処理する
 
-  //shinato
-  //void SetupPacketReceive (Ipv4Address addr, Ptr <Node> node, uint16_t port);
-
 
   void ConfigureDefaults ();//デフォルトの属性を設定する
 
@@ -528,14 +465,8 @@ private:
 
   NetDeviceContainer m_adhocTxDevices;//アドホック送信デバイス
   Ipv4InterfaceContainer m_adhocTxInterfaces;//アドホック送信インターフェイス
-  NodeContainer m_adhocTxNodes;//アドホック送信ノード
-  /*
-  //shinato
-  NetDeviceContainer m_adhocRxDevices;//アドホック受信デバイス
-  Ipv4InterfaceContainer m_adhocRxInterfaces;//アドホック受信インターフェイス
-  NodeContainer m_adhocRxNodes;//アドホック受信ノード
-  */
 
+  NodeContainer m_adhocTxNodes;//アドホック送信ノード
   NodeContainer  stopdevice;
 
   FlowMonitorHelper  *m_flowMonitorHelper;
@@ -575,7 +506,6 @@ m_areaSizeXY (600),
 m_y_pos(0),
 m_divNumXY (5),
 m_adhocTxNodes (),//アホック送信ノードを初期化
-//m_adhocRxNodes(),//shinato アドホック受信ノード初期化
 m_pdr (0),
 m_throughput (0),
 m_delay (0),
@@ -585,6 +515,7 @@ m_numHops(0),
 m_traceFile("/home/hry-user/ノード/test.tcl"),
 m_animFile ("shinato.xml"),
 m_routeFile("shinato_route.xml")
+
 {
 	//送受信ノードを選択
     m_sourceNode=0;
