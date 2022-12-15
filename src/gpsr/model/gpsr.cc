@@ -225,6 +225,8 @@ bool RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
                 lcb (packet, header, iif);
                 return true;
         }
+
+        //shinato
         Ptr<Packet> packet = p->Copy ();
         if(packet->GetSize()!=90)
         {
@@ -238,15 +240,7 @@ bool RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
                 packet->RemoveAtStart(4);
                 NS_LOG_DEBUG("packet input"<<packet->GetSize());
         }
-
         //shinato
-        /*
-        uint8_t *buffer = new uint8_t[packet->GetSize()];
-        packet->CopyData(buffer,packet->GetSize());
-        std::string s = std::string(buffer,buffer+packet->GetSize());
-        std::cout << "Received:" << s << std::endl;
-        delete buffer;*/
-
 
         return Forwarding (packet, header, ucb, ecb);
 }
@@ -259,6 +253,15 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
 {
         NS_LOG_FUNCTION (this << header << (oif ? oif->GetIfIndex () : 0));
         NS_LOG_DEBUG("packet"<<p->GetSize());
+
+        //shinato
+        /*
+        Ptr<Packet>  packet = p->Copy();
+	TypeHeader tHeader (GPSRTYPE_HELLO);
+	packet->RemoveHeader (tHeader);
+        
+        m_neighbors.PrintTable();*/
+        //shinato
         
         if (!p)
         {
@@ -271,8 +274,6 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
                 Ptr<Ipv4Route> route;
                 return route;
         }
-
-
 
         sockerr = Socket::ERROR_NOTERROR;
         Ptr<Ipv4Route> route = Create<Ipv4Route> ();
@@ -983,7 +984,6 @@ RoutingProtocol::Start ()
 
 }
 
-//sese
 //送信ノードに戻る
 Ptr<Ipv4Route>
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr, Ptr<NetDevice> oif)
