@@ -983,7 +983,7 @@ RoutingProtocol::Start ()
 
 }
 
-
+//sese
 //送信ノードに戻る
 Ptr<Ipv4Route>
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr, Ptr<NetDevice> oif)
