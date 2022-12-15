@@ -1225,5 +1225,3 @@ RoutingProtocol::GetDownTarget (void) const
 
 }
 }
-
-
