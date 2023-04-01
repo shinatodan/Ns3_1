@@ -230,7 +230,7 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
   stats.rxPackets++;
 
   //shinato
-  std::cout<<"受信！"<<std::endl;
+  //std::cout<<"受信！"<<std::endl;
   
   if (stats.rxPackets == 1)
     {

@@ -257,18 +257,6 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
                            Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION (this << p << header << incomingInterface);
-  //shinato
-  //std::cout << "a" << std::endl;
-  /*
-  Ptr<Packet> packet = p->Copy();
-  Ipv4Header ipheader;
-  packet->RemoveHeader(ipheader);
-  uint8_t *buffer = new uint8_t[p->GetSize()];
-  packet->CopyData(buffer,packet->GetSize());
-  std::string s = std::string(buffer, buffer + packet->GetSize());
-  std::cout << "Received:" << s << std::endl;
-  delete buffer;*/
-
 
   Icmpv4Header icmp;
   p->RemoveHeader (icmp);
