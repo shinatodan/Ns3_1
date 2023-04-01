@@ -451,8 +451,6 @@ UdpL4Protocol::Send (Ptr<Packet> packet, //helloパケット含む
   udpHeader.SetSourcePort (sport);
 
   packet->AddHeader (udpHeader);
-  //shinato
-  //std::cout << "s" << std::endl;
 
   m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
 }

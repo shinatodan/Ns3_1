@@ -372,7 +372,7 @@ public:
    */
   virtual int Send (Ptr<Packet> p, uint32_t flags) = 0;
   //shinato
-  int cnt = 0;
+  int cnt = 1;
 
   /**
    * \brief Send data to a specified peer.

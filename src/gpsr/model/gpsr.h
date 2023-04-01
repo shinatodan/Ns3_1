@@ -1,5 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+
  */
 #ifndef GPSR_H
 #define GPSR_H
@@ -49,13 +50,13 @@ public:
   ///\name From Ipv4RoutingProtocol
   //
   //
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p/*経路決定する必要のあるパケット*/, const Ipv4Header &header/*経路決定するためのヘッダ情報*/, Ptr<NetDevice> oif/*出力用インターフェース*/, Socket::SocketErrno &sockerr/*ソケットのエラーコード*/);
-  bool RouteInput (Ptr<const Packet> p/*経路決定する必要のあるパケット*/, const Ipv4Header &header/*経路決定するためのヘッダ情報*/, Ptr<const NetDevice> idev/* パケットが入力してきたデバイス*/,
-                   UnicastForwardCallback ucb/*ユニキャスト転送処理用関数*/, MulticastForwardCallback mcb/*マルチキャスト転送処理用関数*/,
-                   LocalDeliverCallback lcb/*ローカル受信用関数*/, ErrorCallback ecb/*エラー処理用関数*/);
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
+                   UnicastForwardCallback ucb, MulticastForwardCallback mcb,
+                   LocalDeliverCallback lcb, ErrorCallback ecb);
   virtual void NotifyInterfaceUp (uint32_t interface);
   int GetProtocolNumber (void) const;
-  //virtual void AddHeaders (Ptr<Packet> p, Ipv4Address source, Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+  virtual void AddHeaders (Ptr<Packet> p, Ipv4Address source, Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
@@ -106,8 +107,6 @@ private:
   ///　ルートが存在し有効な場合、パケットを転送します
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
 
-  std::string Rx (Ptr<const Packet> packet, const Ipv4Header & header,UnicastForwardCallback ucb, ErrorCallback ecb);
-
   ///　ローカル インターフェイス アドレス iface を持つソケットを見つける
   Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
 
@@ -119,6 +118,9 @@ private:
 
   void RecoveryMode(Ipv4Address dst, Ptr<Packet> p, UnicastForwardCallback ucb, Ipv4Header header);
   
+  //shinato
+  uint32_t nodeId = 0;
+  std::string Addpass(std::string &s, uint32_t Id);
   
   uint32_t MaxQueueLen;                  ///<ルーティング プロトコルがバッファできるパケットの最大数
   Time MaxQueueTime;                     ///<ルーティング プロトコルがパケットをバッファできる最大時間

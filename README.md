@@ -124,4 +124,6 @@ for VANET.There is an incomplete scenario file in sclach/shinato.cc,
 which will be improved in the near future.
 
 
+wsscriptでnishioka実行ファイルを追加
+
 

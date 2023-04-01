@@ -24,6 +24,9 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("shinato-simulation");
 
+//文字列を送信し受信したら表示するプログラム
+//GPSRでは使用不可
+
 class WifiPhyStats : public Object
 {
 public:
@@ -136,7 +139,7 @@ sumNode (5),//ノード数
 numPacket (50),
 sendPacket (0),
 receivePacket (0),
-protocolName ("GPSR"),//プロトコル名初期化
+protocolName ("AODV"),//プロトコル名初期化
 totalSimTime (360.0),// シミュレーション時間
 txp (16.026),//送信電力(dB)
 EDT (-96),

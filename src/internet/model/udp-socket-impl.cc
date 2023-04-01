@@ -407,9 +407,6 @@ int //データ送信
 UdpSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << p << flags);
-  //shinato
-  //std::cout << "a" << std::endl;
-
   if (!m_connected)
     {
       m_errno = ERROR_NOTCONN;
@@ -830,9 +827,6 @@ Ptr<Packet>
 UdpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
   NS_LOG_FUNCTION (this << maxSize << flags);
-  //shinato
-  //std::cout << "a" << std::endl;
-
   Address fromAddress;
   Ptr<Packet> packet = RecvFrom (maxSize, flags, fromAddress);
   return packet;

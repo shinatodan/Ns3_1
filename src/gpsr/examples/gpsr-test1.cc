@@ -1,5 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-#include "ns3/flow-monitor-module.h"
+
 #include "ns3/gpsr-module.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
@@ -75,9 +75,9 @@ GpsrExample::GpsrExample () :
   // Grid Width
   gridWidth(2),
   // Distance between nodes
-  step (1000), //TODO Distance changed to the limit between nodes: test to see if there are transmitions
+  step (100), //TODO Distance changed to the limit between nodes: test to see if there are transmitions
   // Simulation time
-  totalTime (5),
+  totalTime (30),
   // Generate capture files for each node
   pcap (true)
 

@@ -154,13 +154,11 @@ RoutingProtocol::SetLS (Ptr<LocationService> locationService)
 }
 
 //ノードがパケットを受信し、そのパケットを転送する必要がある場合（自分が宛先ノードでない場合）
-//ネットワーク層(Ipv4L3Protocol) のReceive メソッドよりパケットを受信すると、ルーティングプロトコル側のこのメソッドが呼び出され、パケットの転送処理を行う。
-//Ipv4L3Protocol::Receive からRouteInput を呼び出す際に、外部へのフォワーディング処理と該当ルータ宛てのパケットの受信処理するためのコールバック関数もパラメータとして渡されるので、
-//RouteInput の中で、パケットの転送先に応じて、これらのコールバック関数を利用すれば良い。
 bool RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                                   UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                   LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+
         NS_LOG_FUNCTION (this << p->GetUid () << header.GetDestination () << idev->GetAddress ());
         NS_LOG_DEBUG("packet input"<<p->GetSize());
         if (m_socketAddresses.empty ())
@@ -225,8 +223,6 @@ bool RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
                 lcb (packet, header, iif);
                 return true;
         }
-
-        //shinato
         Ptr<Packet> packet = p->Copy ();
         if(packet->GetSize()!=90)
         {
@@ -240,29 +236,18 @@ bool RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
                 packet->RemoveAtStart(4);
                 NS_LOG_DEBUG("packet input"<<packet->GetSize());
         }
-        //shinato
-
+      //}
         return Forwarding (packet, header, ucb, ecb);
+        //return Forwarding (p, header, ucb, ecb);
 }
 
-//転送経路決定　パケットの転送処理は行わない　ルーティングテーブルから該当するエントリーを見つけて呼び出し側に返送するだけ
-//返り値はPtr<Ipv4Route>型のもので、ns3::Ipv4Route クラスのメソッドによりパケット転送するためのゲートウェー、使用するインターフェースなどを参照できる。
+
 Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
                               Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
         NS_LOG_FUNCTION (this << header << (oif ? oif->GetIfIndex () : 0));
         NS_LOG_DEBUG("packet"<<p->GetSize());
-
-        //shinato
-        /*
-        Ptr<Packet>  packet = p->Copy();
-	TypeHeader tHeader (GPSRTYPE_HELLO);
-	packet->RemoveHeader (tHeader);
-        
-        m_neighbors.PrintTable();*/
-        //shinato
-        
         if (!p)
         {
                 return LoopbackRoute (header, oif); // later
@@ -274,6 +259,8 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
                 Ptr<Ipv4Route> route;
                 return route;
         }
+
+
 
         sockerr = Socket::ERROR_NOTERROR;
         Ptr<Ipv4Route> route = Create<Ipv4Route> ();
@@ -341,6 +328,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
         }
         else
         {
+                //nextHop = m_neighbors.BestNeighbor (dstPos, myPos,myVec);
                 nextHop = m_neighbors.BestNeighbor (dstPos, myPos);
         }
 
@@ -640,10 +628,7 @@ RoutingProtocol::RecoveryMode(Ipv4Address dst, Ptr<Packet> p, UnicastForwardCall
         return;
 }
 
-//ネットワークインターフェースが初期化され、使用可能状態になると、自動的に呼び出されるメソッド 
-//直接接続されるネットワークに対するルーティングテーブルの初期登録を行う
-//さらに、ルーティングプロトコルに使用されるルーティングテーブルの送受信の専用ソケットを作成する。
-//パラメータとして渡されるのは、使用可能な状態になっているインターフェースのインデックスである。
+//bind socket to interface
 void
 RoutingProtocol::NotifyInterfaceUp (uint32_t interface)
 {
@@ -734,8 +719,6 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
 
 
 //interfaceのsocketを閉じる
-//ネットワークインターフェースが使用不可能な状態になると、自動的に呼び出されるメソッドである。
-//このメソッドの中で、関連するルーティングテーブルのエントリーの削除処理を行う。
 void
 RoutingProtocol::NotifyInterfaceDown (uint32_t interface)
 {
@@ -791,8 +774,6 @@ RoutingProtocol::FindSocketWithInterfaceAddress (Ipv4InterfaceAddress addr ) con
 
 
 //アドレス追加
-//IP アドレスを指定して、ネットワークインターフェースに転送経路を直接的に指定する際に呼び出されるメソッドである。
-//機能的にはNo-tifyInterfaceUp と同じだと考えて良い。普通の場合、NotifyInterfaceUp とNotifyAddAddressのどちらかの1 つを実装する。
 void RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
         NS_LOG_FUNCTION (this << " interface " << interface << " address " << address);
@@ -831,7 +812,6 @@ void RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress
         }
 }
 //アドレスの削除
-//ネットワークインターフェースからIP アドレスを削除すると自動的に呼び出されるメソッド
 void
 RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
@@ -873,9 +853,6 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
         }
 }
 
-//フォワーディングテーブルを取得、設定するためのメソッド
-//一般の場合、このメソッドの中で、Ipv4 のフォワーディングテーブルのインスタンスを取得して、ルーティングプロトコルの内部変数に渡すだけで良い。
-//実際のフォワーディングテーブルの設定・更新などは、ルーティングプロトコルの各メソッドで行う。
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
@@ -984,6 +961,7 @@ RoutingProtocol::Start ()
 
 }
 
+
 //送信ノードに戻る
 Ptr<Ipv4Route>
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr, Ptr<NetDevice> oif)
@@ -1027,55 +1005,62 @@ RoutingProtocol::GetProtocolNumber (void) const
         return GPSR_PORT;
 }
 
-std::string
-RoutingProtocol::Rx (Ptr<const Packet> packet, const Ipv4Header & header,
-                             UnicastForwardCallback ucb, ErrorCallback ecb)
+//中間ノードではなくソースノード、パケットヘッダを追加（内部パケットヘッダではなく、ルートパケットヘッダ AddHeaders）、使われていないようです
+void
+RoutingProtocol::AddHeaders (Ptr<Packet> p, Ipv4Address source, Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route)
 {
-        Ptr<Packet> p = packet->Copy();
-        Ipv4Header ipheader;
-        UdpHeader udpheader;
-        p->RemoveHeader(ipheader);
-        p->RemoveHeader(udpheader);
 
+        NS_LOG_FUNCTION (this << " source " << source << " destination " << destination);
+        NS_LOG_DEBUG ("Call Add Headers function");
+        Vector myPos;
+        Ptr<MobilityModel> MM = m_ipv4->GetObject<MobilityModel> ();
+        myPos.x = MM->GetPosition ().x;
+        myPos.y = MM->GetPosition ().y;
+        Vector myVec;
+        myVec=MM->GetVelocity();
+        //forward機能は後で使用されるため、ここではrecoverymodeはなく、ここでのnexthopは単なる初期化です
+        Ipv4Address nextHop;
 
-        uint8_t *buffer = new uint8_t[p->GetSize()];
-        p->CopyData(buffer, p->GetSize());
-        std::string s = std::string(buffer, buffer + p->GetSize());
-        //std::cout << "Received:" << s << std::endl;
-        return s;
-        //delete buffer;
+        if(m_neighbors.isNeighbour (destination))
+        {
+                nextHop = destination;
+        }
+        else
+        {
+                //nextHop = m_neighbors.BestNeighbor (m_locationService->GetPosition (destination), myPos,myVec);
+                nextHop = m_neighbors.BestNeighbor (m_locationService->GetPosition (destination), myPos);
+        }
+
+        uint16_t positionX = 0;
+        uint16_t positionY = 0;
+        uint32_t hdrTime = 0;
+
+        if(destination != m_ipv4->GetAddress (1, 0).GetBroadcast ())
+        {
+                positionX = m_locationService->GetPosition (destination).x;
+                positionY = m_locationService->GetPosition (destination).y;
+                hdrTime = (uint32_t) m_locationService->GetEntryUpdateTime (destination).GetSeconds ();
+        }
+
+        PositionHeader posHeader (positionX, positionY,  hdrTime, (uint64_t) 0,(uint64_t) 0, (uint8_t) 0, myPos.x, myPos.y);
+        p->AddHeader (posHeader);
+        TypeHeader tHeader (GPSRTYPE_POS);
+        p->AddHeader (tHeader);
+
+        m_downTarget (p, source, destination, protocol, route);
+
 }
 
-
-
-//fowading パケット送信。
+//fowading 中間ノードでの送信となります。
 bool
 RoutingProtocol::Forwarding (Ptr<const Packet> packet, const Ipv4Header & header,
                              UnicastForwardCallback ucb, ErrorCallback ecb)
 {
-                Ipv4Address dst = header.GetDestination ();//宛先ノードのIPアドレス
-		Ipv4Address origin = header.GetSource ();//このパケットの送信ノードIPアドレス
-
-                //shinato
-                if(origin == ("192.168.1.0"))
-                {
-                        std::ostringstream msg;
-                        msg << "Hello,world!";
-                        uint16_t packetSize = msg.str().length();
-                        packet = Create<Packet>((uint8_t *)msg.str().c_str(), packetSize);
-                        //std::cout << packet << std::endl;
-                }
-		//Ptr<Packet> p = packet->Copy ();//パケットのコピーを作る。オリジナルとは別物となる。
-                
-
-                Ptr<Packet> p = packet->Copy ();
-                //std::cout << packet << std::endl;
-              
-
+		Ptr<Packet> p = packet->Copy ();
 		NS_LOG_FUNCTION (this);
-		
-		m_neighbors.Purge ();//有効期限切れのエントリを削除する
-		
+		Ipv4Address dst = header.GetDestination ();
+		Ipv4Address origin = header.GetSource ();
+		m_neighbors.Purge ();
 
 		uint32_t updated = 0;
 		Vector Position;
@@ -1084,9 +1069,9 @@ RoutingProtocol::Forwarding (Ptr<const Packet> packet, const Ipv4Header & header
 
 		TypeHeader tHeader (GPSRTYPE_POS);
 		PositionHeader hdr;
-		p->RemoveHeader (tHeader);//ヘッダをデシアライズし、内部バッファから削除。削除されたバイト数を返す。
+		p->RemoveHeader (tHeader);
 		
-		if (!tHeader.IsValid ())//ヘッダの型が有効でない時
+		if (!tHeader.IsValid ())
 		{
 				NS_LOG_DEBUG ("GPSR message " << p->GetUid () << " with unknown type received: " << tHeader.Get () << " Drop");
 				NS_LOG_DEBUG ("Forwarding meet packet drop because tHeader Deserialize failed "<<tHeader.IsValid ());
@@ -1170,14 +1155,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> packet, const Ipv4Header & header
 				NS_LOG_DEBUG (route->GetOutputDevice () << " forwarding to " << dst << " from " << origin << " through " << route->GetGateway () << " packet " << p->GetUid ());
 
 				ucb (route, p, header);
-
-                                //shinato
-                                /*if(dst == ("192.168.1.4")){
-                                        return RoutingProtocol::Rx(p, header, ucb, ecb);
-                                }
-                                else{
-                                        return true;
-                                }*/
+					
 				return true;
 		}
 		
@@ -1193,17 +1171,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> packet, const Ipv4Header & header
 		RecoveryMode (dst, p, ucb, header);
 
 		NS_LOG_LOGIC ("Entering recovery-mode to " << dst << " in " << m_ipv4->GetAddress (1, 0).GetLocal ());
-
-                //shinato
-		/*if(dst == ("192.168.1.5")){
-                        std::cout << "a" << RoutingProtocol::Rx(p, header, ucb, ecb) << std::endl;
-                        return true;
-                }
-                else{
-                        return true;
-                }*/
-                return true;
-
+		return true;
 		
 }
 
@@ -1225,3 +1193,5 @@ RoutingProtocol::GetDownTarget (void) const
 
 }
 }
+
+

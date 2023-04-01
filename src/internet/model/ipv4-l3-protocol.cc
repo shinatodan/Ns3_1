@@ -731,8 +731,6 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   uint8_t ttl = m_defaultTtl;
   SocketIpTtlTag tag;
   bool found = packet->RemovePacketTag (tag);
-  //shinato
-  //std::cout << "a" << std::endl;
   if (found)
     {
       ttl = tag.GetTtl ();
