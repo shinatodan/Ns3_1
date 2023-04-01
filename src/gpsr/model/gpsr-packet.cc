@@ -147,6 +147,8 @@ HelloHeader::Serialize (Buffer::Iterator i) const
 
   i.WriteHtonU64 (m_originPosx);
   i.WriteHtonU64 (m_originPosy);
+  //shinato
+  i.WriteHtolsbU64 (testcode);
 
 }
 
@@ -158,6 +160,8 @@ HelloHeader::Deserialize (Buffer::Iterator start)
 
   m_originPosx = i.ReadNtohU64 ();
   m_originPosy = i.ReadNtohU64 ();
+  //shinato
+  testcode = i.ReadLsbtohU64 ();
 
   NS_LOG_DEBUG ("Deserialize X " << m_originPosx << " Y " << m_originPosy);
 

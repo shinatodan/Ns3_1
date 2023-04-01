@@ -711,6 +711,8 @@ RoutingProtocol::RecvGPSR (Ptr<Socket> socket)
         //std::cout << msg << std::endl;
         uint64_t test = hdr.Getmessage();
         std::cout << test << std::endl;
+        std::cout << Position.x << std::endl;
+        
 
 
 
