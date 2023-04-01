@@ -64,7 +64,8 @@ class HelloHeader : public Header
 {
 public:
   /// c-tor
-  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0);
+  //shinato
+  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0, /*std::string msg = "*/ uint64_t test = 0);
 
   ///\name Header serialization/deserialization
   //\{
@@ -94,6 +95,23 @@ public:
   {
     return m_originPosy;
   }
+  //shinato
+  /*void Setmessage (std::string msg)
+  {
+    message = msg;
+  }
+  std::string Getmessage () const
+  {
+    return message;
+  }*/
+  void Setmessage (uint64_t test)
+  {
+    testcode = test;
+  }
+  uint64_t Getmessage () const
+  {
+    return testcode;
+  }
   //\}
 
 
@@ -101,6 +119,9 @@ public:
 private:
   uint64_t         m_originPosx;          ///< Originator Position x
   uint64_t         m_originPosy;          ///< Originator Position x
+  //shinato
+  //std::string         message;
+  uint64_t testcode;
 };
 
 std::ostream & operator<< (std::ostream & os, HelloHeader const &);

@@ -106,9 +106,12 @@ operator<< (std::ostream & os, TypeHeader const & h)
 //-----------------------------------------------------------------------------
 // HELLO
 //-----------------------------------------------------------------------------
-HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy)
+//shinato
+HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy, /*std::string msg*/uint64_t test)
   : m_originPosx (originPosx),
-    m_originPosy (originPosy)
+    m_originPosy (originPosy),
+    //message (msg)
+    testcode (test)
 {
 }
 
