@@ -120,7 +120,6 @@ public:
   double GetAngle (Vector centrePos, Vector refPos, Vector node);
 
 
-
 private:
   struct Metrix
   {
