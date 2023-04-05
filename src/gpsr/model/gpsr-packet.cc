@@ -107,10 +107,10 @@ operator<< (std::ostream & os, TypeHeader const & h)
 // HELLO
 //-----------------------------------------------------------------------------
 //shinato
-HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy, /*std::string msg*/uint64_t test)
+HelloHeader::HelloHeader (uint64_t originPosx, uint64_t originPosy, /*std::string msg,*/ uint64_t test)
   : m_originPosx (originPosx),
     m_originPosy (originPosy),
-    //message (msg)
+    //message (msg),
     testcode (test)
 {
 }
@@ -136,7 +136,10 @@ HelloHeader::GetInstanceTypeId () const
 uint32_t
 HelloHeader::GetSerializedSize () const
 {
-  return 16;
+  //shinato
+  //helloパケット数×８
+  return 24;
+  //return 16;
 }
 
 void

@@ -65,7 +65,7 @@ class HelloHeader : public Header
 public:
   /// c-tor
   //shinato
-  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0, /*std::string msg = "*/ uint64_t test = 0);
+  HelloHeader (uint64_t originPosx = 0, uint64_t originPosy = 0, /*std::string msg = "", */uint64_t test = 0);
 
   ///\name Header serialization/deserialization
   //\{

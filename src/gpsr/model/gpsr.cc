@@ -707,11 +707,9 @@ RoutingProtocol::RecvGPSR (Ptr<Socket> socket)
         UpdateRouteToNeighbor (sender, receiver, Position);
 
         //shinato
-        //std::string msg = hdr.Getmessage();
-        //std::cout << msg << std::endl;
+        //受け取った数字を表示
         uint64_t test = hdr.Getmessage();
         std::cout << test << std::endl;
-        std::cout << Position.x << std::endl;
         
 
 
@@ -903,9 +901,10 @@ RoutingProtocol::SendHello ()
         positionY = MM->GetPosition ().y;
 
         //shinato
-        std::string msg;
-        msg = "Hello packet";
+        //std::string msg;
+        //msg = "Hello packet";
         //test
+        //helloパケットに追加する数字
         uint64_t test = 10;
         
 		for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
@@ -915,7 +914,7 @@ RoutingProtocol::SendHello ()
 
                                 //shinato
                                 //helloヘッダーに文字列を追加
-				HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), test);
+				HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), test /*, msg*/);
 
 				Ptr<Packet> packet = Create<Packet> ();
 				packet->AddHeader (helloHeader);

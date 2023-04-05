@@ -772,6 +772,8 @@ RoutingProtocol::RecvLGPSR (Ptr<Socket> socket)
         //NS_LOG_DEBUG("reciever is"<<receiver );
         NS_LOG_DEBUG("update position"<<Position.x<<Position.y );
         //NS_LOG_DEBUG("update future position"<<f_Position.x<<f_Position.y );
+        //shinato
+        //std::cout << f_Position.x << std::endl;
 //追加終了       
         //更新neighbor的信息
         UpdateRouteToNeighbor (sender, receiver, Position, f_Position);
