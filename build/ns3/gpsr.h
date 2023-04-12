@@ -62,7 +62,8 @@ public:
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void RecvGPSR (Ptr<Socket> socket);
-  virtual void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos);
+  //shinato
+  virtual void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos, uint64_t nodeid);
   virtual void SendHello ();
   virtual bool IsMyOwnAddress (Ipv4Address src);
 
@@ -119,8 +120,8 @@ private:
   void RecoveryMode(Ipv4Address dst, Ptr<Packet> p, UnicastForwardCallback ucb, Ipv4Header header);
   
   //shinato
-  uint32_t nodeId = 0;
-  std::string Addpass(std::string &s, uint32_t Id);
+  uint64_t nodeId = 0;  //ノードID取得用変数
+  //std::string Addpass(std::string &s, uint32_t Id);
   
   uint32_t MaxQueueLen;                  ///<ルーティング プロトコルがバッファできるパケットの最大数
   Time MaxQueueTime;                     ///<ルーティング プロトコルがパケットをバッファできる最大時間

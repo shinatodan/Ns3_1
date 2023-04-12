@@ -703,22 +703,20 @@ RoutingProtocol::RecvGPSR (Ptr<Socket> socket)
         Ipv4Address sender = inetSourceAddr.GetIpv4 ();
         Ipv4Address receiver = m_socketAddresses[socket].GetLocal ();
         NS_LOG_DEBUG("update position"<<Position.x<<Position.y );
-        //近隣ノードの情報更新
-        UpdateRouteToNeighbor (sender, receiver, Position);
-
-        //shinato
-        //受け取った数字を表示
-        uint64_t test = hdr.Getmessage();
-        std::cout << test << std::endl;
         
+        //shinato
+        uint64_t nodeid = hdr.Getmessage(); //数字受け取り
+        //std::cout << nodeid << std::endl;//表示（確認用）
 
+        //近隣ノードの情報更新
+        UpdateRouteToNeighbor (sender, receiver, Position, nodeid);
 
 
 }
 
 
 void
-RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos)
+RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos, uint64_t nodeid)
 {
 		m_neighbors.AddEntry (sender, Pos);
         
@@ -901,11 +899,10 @@ RoutingProtocol::SendHello ()
         positionY = MM->GetPosition ().y;
 
         //shinato
-        //std::string msg;
-        //msg = "Hello packet";
-        //test
         //helloパケットに追加する数字
-        uint64_t test = 10;
+        //uint64_t test = 10;
+        nodeId = m_ipv4->GetObject<Node> ()->GetId ();//ノードID取得
+
         
 		for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
 		{
@@ -914,7 +911,7 @@ RoutingProtocol::SendHello ()
 
                                 //shinato
                                 //helloヘッダーに文字列を追加
-				HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), test /*, msg*/);
+				HelloHeader helloHeader (((uint64_t) positionX),((uint64_t) positionY), nodeId /*, msg*/);
 
 				Ptr<Packet> packet = Create<Packet> ();
 				packet->AddHeader (helloHeader);
