@@ -33,7 +33,7 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
         return i->second.time; //記録が行われた時間を返す
 }
 
-/**g
+/**
  * \brief Adds entry in position table
  */
 //TODO 仕上がり速度
