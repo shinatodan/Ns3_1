@@ -39,7 +39,8 @@ public:
   /**
    * \brief Adds entry in position table
    */
-  void AddEntry (Ipv4Address id, Vector position);
+  //shinato
+  void AddEntry (Ipv4Address id, Vector position, uint64_t nodeid);
 
   /**
    * \brief Deletes entry in position table

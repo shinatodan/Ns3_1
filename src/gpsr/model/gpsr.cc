@@ -707,18 +707,16 @@ RoutingProtocol::RecvGPSR (Ptr<Socket> socket)
         //shinato
         uint64_t nodeid = hdr.Getmessage(); //数字受け取り
         //std::cout << nodeid << std::endl;//表示（確認用）
-
-        //近隣ノードの情報更新
-        UpdateRouteToNeighbor (sender, receiver, Position, nodeid);
+        UpdateRouteToNeighbor (sender, receiver, Position, nodeid);//近隣ノードの情報更新
 
 
 }
 
-
+//shinato
 void
 RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver, Vector Pos, uint64_t nodeid)
 {
-		m_neighbors.AddEntry (sender, Pos);
+		m_neighbors.AddEntry (sender, Pos, nodeid);
         
 }
 
