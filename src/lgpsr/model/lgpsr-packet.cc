@@ -136,7 +136,7 @@ HelloHeader::GetInstanceTypeId () const
 uint32_t
 HelloHeader::GetSerializedSize () const
 {
-  return 32;
+  return 32;//
 }
 
 void

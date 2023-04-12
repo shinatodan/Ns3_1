@@ -37,7 +37,7 @@ PositionTable::GetEntryUpdateTime (Ipv4Address id)
  */
 //TODO finish velocity
 void
-PositionTable::AddEntry (Ipv4Address id, Vector position, Vector f_position, uint32_t flag)
+PositionTable::AddEntry (Ipv4Address id, Vector position, Vector f_position)
 {
         std::map<Ipv4Address, Metrix >::iterator i = m_table.find (id);
         
@@ -45,225 +45,54 @@ PositionTable::AddEntry (Ipv4Address id, Vector position, Vector f_position, uin
         
 		//NS_LOG_DEBUG ("Add header" );
 		//NS_LOG_DEBUG ("My Pos" << position);
-		
-		//shinato
-		if(flag == 1)
-		{	
-						//隣接ノードテーブルにIDがある場合更新,tpテーブルに追加
-			if (i != m_table.end () || id.IsEqual (i->first)){        
-				if(time_now - i->second.previous_arrival_time > 30){//タイムアウト時はすべてのテーブルを削除し作りなおす
-					NS_LOG_DEBUG ("Time out happend" );
-					m_table.erase (id);
-					tp_table.erase(id);
-					Metrix metrix;
-					std::vector<double> arrival_time;
-				    position.x=765;//宛先ノード近い
-					position.y=878;
-					//position.x=10000;
-				    //position.y=10000;
-					metrix.position=position;
-					metrix.f_position=f_position;
-					metrix.time=Simulator::Now ();
-					metrix.previous_arrival_time=time_now;
-					arrival_time.emplace_back(time_now);
-					m_table.insert (std::make_pair (id, metrix));
-					tp_table.insert(std::make_pair (id, arrival_time));
-					return; //返さないと後の処理ができない
-				}
-				else{//非タイムアウト時は隣接ノードテーブルを削除し更新、パケットテーブルの末尾に時間を追記
-						m_table.erase (id);
-						Metrix metrix;				
-						position.x=765;//宛先ノード近い
-						position.y=878;	
-						//position.x=10000;
-						//position.y=10000;						
-						metrix.position=position;
-						metrix.f_position=f_position;
-						metrix.time=Simulator::Now ();
-						metrix.previous_arrival_time=time_now;					
-						m_table.insert (std::make_pair (id, metrix));
-						
-						std::vector<double> arrival_time;
-						arrival_time = tp_table.at(i->first);
-						arrival_time.emplace_back(time_now);
-						tp_table.erase(id);
-						tp_table.insert(std::make_pair (id, arrival_time));
-						
-						return; //返さないと後の処理ができない				
-					}  
-			}   
-			Metrix metrix;
-			position.x=765;//宛先ノード近い
-			position.y=878;
-			//position.x=10000;
-			//position.y=10000;			
-			std::vector<double> arrival_time;
-			metrix.position=position;
-			metrix.f_position=f_position;
-			metrix.time=Simulator::Now ();
-			metrix.previous_arrival_time=time_now;
-			arrival_time.emplace_back(time_now);
-			m_table.insert (std::make_pair (id, metrix));
-			tp_table.insert(std::make_pair (id, arrival_time));
-			return;
-		}
-		if(flag == 2)
-		{	
-						//隣接ノードテーブルにIDがある場合更新,tpテーブルに追加
-			if (i != m_table.end () || id.IsEqual (i->first)){        
-				if(time_now - i->second.previous_arrival_time > 30){//タイムアウト時はすべてのテーブルを削除し作りなおす
-					NS_LOG_DEBUG ("Time out happend" );
-					m_table.erase (id);
-					tp_table.erase(id);
-					Metrix metrix;
-					std::vector<double> arrival_time;
-				    position.x=432;//宛先ノード近い
-					position.y=1129;
-					metrix.position=position;
-					metrix.f_position=f_position;
-					metrix.time=Simulator::Now ();
-					metrix.previous_arrival_time=time_now;
-					arrival_time.emplace_back(time_now);
-					m_table.insert (std::make_pair (id, metrix));
-					tp_table.insert(std::make_pair (id, arrival_time));
-					return; //返さないと後の処理ができない
-				}
-				else{//非タイムアウト時は隣接ノードテーブルを削除し更新、パケットテーブルの末尾に時間を追記
-						m_table.erase (id);
-						Metrix metrix;				
-						position.x=432;//宛先ノード近い
-						position.y=1129;	
-						metrix.position=position;
-						metrix.f_position=f_position;
-						metrix.time=Simulator::Now ();
-						metrix.previous_arrival_time=time_now;					
-						m_table.insert (std::make_pair (id, metrix));
-						
-						std::vector<double> arrival_time;
-						arrival_time = tp_table.at(i->first);
-						arrival_time.emplace_back(time_now);
-						tp_table.erase(id);
-						tp_table.insert(std::make_pair (id, arrival_time));
-						
-						return; //返さないと後の処理ができない				
-					}  
-			}   
-			Metrix metrix;
-			position.x=432;//宛先ノード近い
-			position.y=1129;
-			std::vector<double> arrival_time;
-			metrix.position=position;
-			metrix.f_position=f_position;
-			metrix.time=Simulator::Now ();
-			metrix.previous_arrival_time=time_now;
-			arrival_time.emplace_back(time_now);
-			m_table.insert (std::make_pair (id, metrix));
-			tp_table.insert(std::make_pair (id, arrival_time));
-			return;
-		}
-		if(flag == 3)
-		{	
-						//隣接ノードテーブルにIDがある場合更新,tpテーブルに追加
-			if (i != m_table.end () || id.IsEqual (i->first)){        
-				if(time_now - i->second.previous_arrival_time > 30){//タイムアウト時はすべてのテーブルを削除し作りなおす
-					NS_LOG_DEBUG ("Time out happend" );
-					m_table.erase (id);
-					tp_table.erase(id);
-					Metrix metrix;
-					std::vector<double> arrival_time;
-				    position.x=295;//宛先ノード近い
-					position.y=807;
-					metrix.position=position;
-					metrix.f_position=f_position;
-					metrix.time=Simulator::Now ();
-					metrix.previous_arrival_time=time_now;
-					arrival_time.emplace_back(time_now);
-					m_table.insert (std::make_pair (id, metrix));
-					tp_table.insert(std::make_pair (id, arrival_time));
-					return; //返さないと後の処理ができない
-				}
-				else{//非タイムアウト時は隣接ノードテーブルを削除し更新、パケットテーブルの末尾に時間を追記
-						m_table.erase (id);
-						Metrix metrix;				
-						position.x=295;//宛先ノード近い
-						position.y=807;	
-						metrix.position=position;
-						metrix.f_position=f_position;
-						metrix.time=Simulator::Now ();
-						metrix.previous_arrival_time=time_now;					
-						m_table.insert (std::make_pair (id, metrix));
-						
-						std::vector<double> arrival_time;
-						arrival_time = tp_table.at(i->first);
-						arrival_time.emplace_back(time_now);
-						tp_table.erase(id);
-						tp_table.insert(std::make_pair (id, arrival_time));
-						
-						return; //返さないと後の処理ができない				
-					}  
-			}   
-			Metrix metrix;
-			position.x=295;//宛先ノード近い
-			position.y=807;
-			std::vector<double> arrival_time;
-			metrix.position=position;
-			metrix.f_position=f_position;
-			metrix.time=Simulator::Now ();
-			metrix.previous_arrival_time=time_now;
-			arrival_time.emplace_back(time_now);
-			m_table.insert (std::make_pair (id, metrix));
-			tp_table.insert(std::make_pair (id, arrival_time));
-			return;
-		}
-		else{
-			//隣接ノードテーブルにIDがある場合更新,tpテーブルに追加
-			if (i != m_table.end () || id.IsEqual (i->first))
-			{        
-				if(time_now - i->second.previous_arrival_time > 30){//タイムアウト時はすべてのテーブルを削除し作りなおす
-					NS_LOG_DEBUG ("Time out happend" );
-					m_table.erase (id);
-					tp_table.erase(id);
-					Metrix metrix;
-					std::vector<double> arrival_time;
-					metrix.position=position;
-					metrix.f_position=f_position;
-					metrix.time=Simulator::Now ();
-					metrix.previous_arrival_time=time_now;
-					arrival_time.emplace_back(time_now);
-					m_table.insert (std::make_pair (id, metrix));
-					tp_table.insert(std::make_pair (id, arrival_time));
-					return; //返さないと後の処理ができない
-				}
-					else{//非タイムアウト時は隣接ノードテーブルを削除し更新、パケットテーブルの末尾に時間を追記
-						m_table.erase (id);
-						Metrix metrix;					
-						metrix.position=position;
-						metrix.f_position=f_position;
-						metrix.time=Simulator::Now ();
-						metrix.previous_arrival_time=time_now;					
-						m_table.insert (std::make_pair (id, metrix));
-						
-						std::vector<double> arrival_time;
-						arrival_time = tp_table.at(i->first);
-						arrival_time.emplace_back(time_now);
-						tp_table.erase(id);
-						tp_table.insert(std::make_pair (id, arrival_time));
-						
-						return; //返さないと後の処理ができない				
-						}                                             
+
+        //隣接ノードテーブルにIDがある場合更新,tpテーブルに追加
+        if (i != m_table.end () || id.IsEqual (i->first))
+        {        
+			if(time_now - i->second.previous_arrival_time > 30){//タイムアウト時はすべてのテーブルを削除し作りなおす
+				NS_LOG_DEBUG ("Time out happend" );
+				m_table.erase (id);
+				tp_table.erase(id);
+				Metrix metrix;
+				std::vector<double> arrival_time;
+                metrix.position=position;
+                metrix.f_position=f_position;
+                metrix.time=Simulator::Now ();
+                metrix.previous_arrival_time=time_now;
+				arrival_time.emplace_back(time_now);
+				m_table.insert (std::make_pair (id, metrix));
+				tp_table.insert(std::make_pair (id, arrival_time));
+                return; // 必须返回，否则后面没有办法进行
 			}
-			//隣接ノードテーブルにIDがない場合追加しパケット到着テーブル作成
-			Metrix metrix;
-			std::vector<double> arrival_time;
-			metrix.position=position;
-			metrix.f_position=f_position;
-			metrix.time=Simulator::Now ();
-			metrix.previous_arrival_time=time_now;
-			arrival_time.emplace_back(time_now);
-			m_table.insert (std::make_pair (id, metrix));
-			tp_table.insert(std::make_pair (id, arrival_time));
-			return;
-		}
+                else{//非タイムアウト時は隣接ノードテーブルを削除し更新、パケットテーブルの末尾に時間を追記
+					m_table.erase (id);
+					Metrix metrix;					
+					metrix.position=position;
+					metrix.f_position=f_position;
+					metrix.time=Simulator::Now ();
+					metrix.previous_arrival_time=time_now;					
+					m_table.insert (std::make_pair (id, metrix));
+					
+					std::vector<double> arrival_time;
+					arrival_time = tp_table.at(i->first);
+					arrival_time.emplace_back(time_now);
+					tp_table.erase(id);
+					tp_table.insert(std::make_pair (id, arrival_time));
+					
+					return; // 必须返回，否则后面没有办法进行					
+					}                                             
+        }
+        //隣接ノードテーブルにIDがない場合追加しパケット到着テーブル作成
+        
+        Metrix metrix;
+        std::vector<double> arrival_time;
+        metrix.position=position;
+        metrix.f_position=f_position;
+        metrix.time=Simulator::Now ();
+        metrix.previous_arrival_time=time_now;
+        arrival_time.emplace_back(time_now);
+        m_table.insert (std::make_pair (id, metrix));
+        tp_table.insert(std::make_pair (id, arrival_time));
         
 }
 

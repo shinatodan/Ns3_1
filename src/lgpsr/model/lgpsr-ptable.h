@@ -38,7 +38,7 @@ public:
   /**
    * \brief Adds entry in position table
    */
-  void AddEntry (Ipv4Address id, Vector position, Vector velocity, uint32_t flag);
+  void AddEntry (Ipv4Address id, Vector position, Vector velocity);
 
   /**
    * \brief Deletes entry in position table

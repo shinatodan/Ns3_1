@@ -121,10 +121,6 @@ private:
 
   void RecoveryMode(Ipv4Address dst, Ptr<Packet> p, UnicastForwardCallback ucb, Ipv4Header header);
   
-  //shinato
-  uint32_t nodeId = 0;
-  std::string Addpass(std::string &s, uint32_t Id);
-  
   uint32_t MaxQueueLen;                  ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time MaxQueueTime;                     ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
   RequestQueue m_queue;
